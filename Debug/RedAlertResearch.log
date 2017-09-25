@@ -1,0 +1,13 @@
+﻿  jmp.cpp
+c:\users\lenovo\documents\visual studio 2017\projects\redalertresearch\redalertresearch\jmp.cpp(5): warning C4309: '=': truncation of constant value
+c:\users\lenovo\documents\visual studio 2017\projects\redalertresearch\redalertresearch\jmp.cpp(12): warning C4309: '=': truncation of constant value
+  dllmain.cpp
+c:\users\lenovo\documents\visual studio 2017\projects\redalertresearch\redalertresearch\dllmain.cpp(31): warning C4473: 'printf' : not enough arguments passed for format string
+  c:\users\lenovo\documents\visual studio 2017\projects\redalertresearch\redalertresearch\dllmain.cpp(31): note: placeholders and their parameters expect 3 variadic arguments, but 0 were provided
+  c:\users\lenovo\documents\visual studio 2017\projects\redalertresearch\redalertresearch\dllmain.cpp(31): note: the missing variadic argument 1 is required by format string '%s'
+c:\users\lenovo\documents\visual studio 2017\projects\redalertresearch\redalertresearch\dllmain.cpp(48): warning C4477: 'printf' : format string '%p' requires an argument of type 'void *', but variadic argument 1 has type 'DWORD'
+c:\users\lenovo\documents\visual studio 2017\projects\redalertresearch\redalertresearch\dllmain.cpp(51): warning C4477: 'printf' : format string '%p' requires an argument of type 'void *', but variadic argument 1 has type 'intptr_t'
+  Generating Code...
+dllmain.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:LBR' specification
+  RedAlertResearch.vcxproj -> C:\Users\LENOVO\Documents\Visual Studio 2017\Projects\RedAlertResearch\Debug\RedAlertResearch.dll
+  RedAlertResearch.vcxproj -> C:\Users\LENOVO\Documents\Visual Studio 2017\Projects\RedAlertResearch\Debug\RedAlertResearch.pdb (Full PDB)
