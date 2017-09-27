@@ -8,9 +8,10 @@ This was the best game of its time. Period.
 Simply compile the solution with Visual Studio (or your choice of compiler.)
 
 ### Feature List
-* List all ingame configurations processed
+* List all ingame configurations processed (now to folders, not a single file.)
 * Modify, at runtime, aforementioned game configurations
 * In skirmish mode, disable the AI's ability to build anything.
+* Infinite money
 
 ### Authors
 * **Alden Viljoen**
