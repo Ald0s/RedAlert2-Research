@@ -3,10 +3,13 @@
 #include <string>
 #include <sstream>
 
+#include "credits.h"
 #include "jmp.h"
 
 AldosV::CJmpHook config_Jmp,
 	build_Jmp;
+AldosV::CCredits credits;
+
 FILE* dbg;
 
 void StartModule();
@@ -18,9 +21,25 @@ bool bShouldSaveConfigs = false;
 
 // Skirmish mode only
 // If true, disables AI from being able to build anything. So they just sit there confused.
-bool bShouldCrippleEnemies = true;
+bool bShouldCrippleEnemies = false;
 
+// Will set and maintain your credits at an infinite amount.
+bool bInfiniteCredits = true;
+
+bool shouldrun = true;
+bool ingame = false;
+
+DWORD WINAPI InitialiseStateThread();
+void CheckForCompatibleVersion(HMODULE base);
+
+bool DoesDirectoryExist(const char* pszDirectoryName);
 void SaveConfigurationSetting(const char* pszConfig, const char* pszName, int iValue, int iResult);
+std::string AssembleConfigContents(const char* pszKey, int iValue, int iResult);
+
+const char* pszRA2ConfigDirectory = "C:/RA2/Configs/";
+const char* pszRA2Debug = "C:/RA2/ra2_dbg.txt";
+
+const char* pszSupportedVersion = "1.006";
 
 BOOL WINAPI DllMain(
 	_In_ HINSTANCE hinstDLL,
@@ -83,9 +102,15 @@ char __fastcall hook_CheckBuild(void* thisptr, void* edx, int iOne, int iTwo) {
 void StartModule() {
 	AllocConsole();
 	freopen("CONOUT$", "w", stdout);
-	dbg = fopen("C:/RA2/ra2_dbg.txt", "w");
+
+	if (!DoesDirectoryExist(pszRA2ConfigDirectory)) {
+		CreateDirectoryA(pszRA2ConfigDirectory, 0);
+	}
+
+	dbg = fopen(pszRA2Debug, "w");
 	if (!dbg) {
 		printf("Failed to open file.\n");
+		return;
 	}
 
 	printf("Attempting to get handle to game.exe ...\n");
@@ -95,6 +120,10 @@ void StartModule() {
 		printf("Failed to get handle to main module (returned null)\n");
 		return;
 	}
+
+	credits.Setup(game);
+	printf("C&C Red Alert 2 Research - github.com/ald0s\nChecking for compatability...\n\n");
+	CheckForCompatibleVersion(game);
 
 	printf("Base address is %p\n", (DWORD)game);
 
@@ -106,6 +135,7 @@ void StartModule() {
 	printf("Hooking build function at %p\n", buildTargetAddress);
 	build_Jmp.Hook((void*)buildTargetAddress, &hook_CheckBuild);
 
+	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)InitialiseStateThread, 0, 0, 0);
 }
 
 void EndModule() {
@@ -113,21 +143,74 @@ void EndModule() {
 	build_Jmp.Remove();
 
 	fclose(dbg);
+	shouldrun = false;
+}
+
+void CheckForCompatibleVersion(HMODULE base) {
+	const char* pszGameVersion = (const char*)((intptr_t)base) + 0x640c94;
+	if (strcmp(pszGameVersion, pszSupportedVersion) == 0) {
+		printf("Your game is supported! Everything should work.\n");
+	}
+	else {
+		printf("WARNING!! Your game isn't supported. You may have to modify a few calculations.\n");
+	}
+}
+
+DWORD WINAPI InitialiseStateThread() {
+	while (shouldrun) {
+
+		if (bInfiniteCredits)
+			credits.SetCredit(100000);
+	}
+	return 0;
 }
 
 void SaveConfigurationSetting(const char* pszConfig, const char* pszName, int iValue, int iResult) {
-	if (dbg) {
-		std::stringstream ss;
-		ss.clear();
+	std::string dirname;
+	dirname.append(pszRA2ConfigDirectory);
+	dirname.append(pszConfig);
 
-		ss << "Config: " << pszConfig << "\n";
-		ss << "Name: " << pszName << "\n";
-		ss << "Value: " << std::to_string(iValue) << "\n";
-		ss << "Return: " << std::to_string(iResult) << "\n\n";
-
-		const char* pszBuffer = ss.str().c_str();
-		printf(pszBuffer);
-		fwrite(pszBuffer, sizeof(char), strlen(pszBuffer), dbg);
-		fflush(dbg);
+	if (!DoesDirectoryExist(dirname.c_str())) {
+		CreateDirectoryA(dirname.c_str(), 0);
 	}
+
+	std::string filename;
+	filename += dirname;
+	filename.append("/");
+	filename.append(pszName);
+	filename.append(".txt");
+
+	std::string contents = AssembleConfigContents(pszName, iValue, iResult);
+	const char* pszContents = contents.c_str();
+
+	FILE* output = fopen(filename.c_str(), "w");
+	if (output) {
+		fwrite(pszContents, sizeof(char), strlen(pszContents), output);
+		fflush(output);
+
+		fclose(output);
+	}
+}
+
+bool DoesDirectoryExist(const char* pszDirectoryName) {
+	DWORD result = GetFileAttributesA(pszDirectoryName);
+	switch (result) {
+	case FILE_ATTRIBUTE_DIRECTORY:
+		return true;
+
+	case INVALID_FILE_ATTRIBUTES:
+	default:
+		return false;
+	}
+}
+
+std::string AssembleConfigContents(const char* pszKey, int iValue, int iResult) {
+	std::string contents;
+	contents.append("Value: ");
+	contents.append(std::to_string(iValue));
+	contents.append("\n");
+	contents.append("Return: ");
+	contents.append(std::to_string(iResult));
+
+	return contents;
 }

@@ -146,10 +146,12 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="credits.h" />
     <ClInclude Include="jmp.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="credits.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="jmp.cpp" />
   </ItemGroup>

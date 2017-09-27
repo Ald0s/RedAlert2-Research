@@ -24,12 +24,18 @@
     <ClInclude Include="jmp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="credits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="jmp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="credits.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
